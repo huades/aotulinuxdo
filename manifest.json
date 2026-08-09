@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "linux.do 小助手（本地增强版）",
+  "version": "2.5.1",
+  "description": "linux.do 本地阅读助手；账户浏览帖子数按近 100 日统计，并仅在开始、结束或手动点击时更新。",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://linux.do/*",
+    "https://idcflare.com/*",
+    "https://connect.linux.do/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "icons": {
+    "16": "linux.do.png",
+    "32": "linux.do.png",
+    "48": "linux.do.png",
+    "128": "linux.do.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://linux.do/*", "https://idcflare.com/*"],
+      "js": ["lib/html2canvas.min.js", "content/bridge.js", "content/assistant.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "linux.do 小助手",
+    "default_icon": {
+      "16": "linux.do.png",
+      "32": "linux.do.png"
+    }
+  }
+}
