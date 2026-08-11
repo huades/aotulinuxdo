@@ -34,3 +34,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   })();
   return true;
 });
+
+// Open linux.do in a new tab when the extension action is clicked.
+chrome.action.onClicked.addListener(() => {
+  chrome.tabs.create({ url: 'https://linux.do/' });
+});
