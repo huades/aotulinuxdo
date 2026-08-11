@@ -1705,6 +1705,8 @@ class BrowseController {
                 currentReading: '📖 当前阅读',
                 remainingTopics: '剩余帖子',
                 todayRead: '今日阅读',
+                readingTime: '\u672C\u6B21\u7528\u65F6',
+                likeSettings: '\u2764\uFE0F \u70B9\u8D5E\u8BBE\u7F6E',
                 // 主题配色相关
                 themeColorLabel: '🎨 主题配色',
                 themeColorTip: '选择面板的主题配色方案',
@@ -1855,6 +1857,7 @@ class BrowseController {
         // 新增：点赞过滤功能
         this.likeFilterMode = Storage.get('likeFilterMode', 'off'); // 'off' | 'threshold' | 'probability'
         this.likeMinThreshold = Storage.get('likeMinThreshold', 5); // 最低点赞数阈值
+        this.likeMinThreshold = Math.min(20, Math.max(1, Math.round(Number(this.likeMinThreshold) || 5)));
 
         // 新增：CloudFlare 5秒盾自动跳转功能
         this.cfBypassEnabled = Storage.get('cfBypassEnabled', true); // 默认开启
@@ -1884,11 +1887,17 @@ class BrowseController {
         this.hasRemainingHomeUnreadSnapshot = this.getSessionStorage('hasRemainingHomeUnreadSnapshot', false);
         this.skippedReadCount = this.getSessionStorage('skippedReadCount', 0); // 本次会话跳过的已读帖子数
         this.todayReadCount = this.loadTodayReadCount(); // 今日阅读帖子数
+        this.readingStartedAt = this.autoRunning
+            ? Math.max(0, Number(this.getSessionStorage('readingStartedAt', Date.now())) || Date.now())
+            : 0;
+        this.lastReadingElapsedMs = Math.max(0, Number(this.getSessionStorage('lastReadingElapsedMs', 0)) || 0);
+        this.readingTimerInterval = null;
         this.officialPostsReadCount = null; // 账号信息中的“浏览帖子”数（posts_read_count）
         this.officialReadCountSyncing = false;
         this.officialReadCountSyncPending = false;
         this.autoLikeInFlightTopics = new Set();
 
+        this.autoLikeDecisionCache = new Map();
         this._topicCreatedTimeObserver = null; // 列表页创建时间观察器
 
         // 检查是否到达恢复点赞的时间
@@ -1901,6 +1910,7 @@ class BrowseController {
 
         this.setupButton();
         // 根据当前布局和激活状态决定是否加载账号信息
+        if (this.autoRunning) this.startReadingTimer(true);
         this.initDataLoading();
         this.startUserSwitchMonitoring(); // 启动账号切换监控
         this.initFloorNumberDisplay();
@@ -3205,6 +3215,110 @@ class BrowseController {
                 gap: 4px;
             }
 
+            .like-settings-card {
+                margin: 8px 0 6px;
+                padding: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                border-radius: 10px;
+                background: rgba(20, 24, 32, 0.2);
+                box-sizing: border-box;
+            }
+
+            .like-settings-title {
+                display: flex;
+                align-items: center;
+                font-size: 11px;
+                font-weight: 650;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0 2px 7px;
+                letter-spacing: 0.2px;
+            }
+
+            .like-settings-overview {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 6px;
+                margin-bottom: 6px;
+            }
+
+            .like-settings-overview > * {
+                margin: 0 !important;
+                min-width: 0;
+                padding: 6px 7px !important;
+                border: 0 !important;
+                background: rgba(255, 255, 255, 0.08) !important;
+                box-sizing: border-box;
+            }
+
+            .like-settings-toggle-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 6px;
+                margin-bottom: 5px;
+            }
+
+            .like-settings-toggle-grid .toggle-row {
+                margin: 0;
+                min-height: 28px;
+                padding: 5px 7px;
+            }
+
+            .like-settings-card > .like-filter-mode-row,
+            .like-settings-card > .like-min-threshold-row {
+                margin-top: 5px;
+            }
+
+            .like-settings-filter-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 6px;
+                margin-top: 5px;
+            }
+
+            .like-settings-filter-grid .toggle-row {
+                margin: 0;
+                min-width: 0;
+                min-height: 30px;
+                padding: 5px 7px;
+            }
+
+            .like-settings-filter-grid select {
+                min-width: 52px !important;
+            }
+            .like-settings-card .read-tab-action-btn {
+                width: 100%;
+                margin: 6px 0 0;
+            }
+
+            .like-settings-card {
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+            }
+
+            .like-settings-title {
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 4px 0;
+                padding: 0 4px;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+
+            .like-settings-title,
+            .like-settings-card .toggle-label,
+            .like-settings-overview span {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                overflow-wrap: normal;
+                word-break: keep-all;
+            }
+
             .settings-inner-collapsible {
                 margin-top: 10px;
                 border-top: 1px dashed rgba(255, 255, 255, 0.15);
@@ -4340,30 +4454,35 @@ class BrowseController {
                 (value) => {
                     this.likeFilterMode = value;
                     Storage.set('likeFilterMode', this.likeFilterMode);
+                    this.autoLikeDecisionCache.clear();
                     console.log(`点赞过滤模式: ${this.likeFilterMode}`);
                     // 更新所有阈值行的显示状态
                     document.querySelectorAll('.like-min-threshold-row').forEach(row => {
                         row.style.display = value === 'threshold' ? 'flex' : 'none';
                     });
+                    modeRow.style.gridColumn = value === 'threshold' ? 'auto' : '1 / -1';
                 }
             );
             modeRow.title = this.t('likeFilterModeTip');
             modeRow.classList.add('like-filter-mode-row');
 
             // 最低赞数阈值设置
-            const thresholdRow = this.createSliderRow(
+            const thresholdRow = this.createSelectRow(
                 this.t('likeMinThreshold'),
+                Array.from({ length: 20 }, (_, index) => ({ value: index + 1, label: String(index + 1) })),
                 this.likeMinThreshold,
-                1, 20, 1,
                 (value) => {
-                    this.likeMinThreshold = value;
+                    const selectedValue = Math.min(20, Math.max(1, Math.round(Number(value) || 5)));
+                    this.likeMinThreshold = selectedValue;
                     Storage.set('likeMinThreshold', this.likeMinThreshold);
+                    this.autoLikeDecisionCache.clear();
                     console.log(`最低赞数阈值: ${this.likeMinThreshold}`);
                 }
             );
             thresholdRow.title = this.t('likeMinThresholdTip');
             thresholdRow.classList.add('like-min-threshold-row');
             // 根据过滤模式决定是否显示阈值设置
+            modeRow.style.gridColumn = this.likeFilterMode === 'threshold' ? 'auto' : '1 / -1';
             thresholdRow.style.display = this.likeFilterMode === 'threshold' ? 'flex' : 'none';
 
             return { modeRow, thresholdRow };
@@ -4571,6 +4690,27 @@ class BrowseController {
             tab3Content.appendChild(readSpeedRow);
             tab3Content.appendChild(stopAfterReadCountRow);
 
+            const tabLikeSettings = document.createElement('div');
+            tabLikeSettings.className = 'like-settings-card';
+            tabLikeSettings.innerHTML = `<div class="like-settings-title">${this.t('likeSettings')}</div>`;
+            const tabLikeOverview = document.createElement('div');
+            tabLikeOverview.className = 'like-settings-overview';
+            tabLikeOverview.appendChild(this.autoLikeStatusContainer);
+            tabLikeOverview.appendChild(this.likeCounterContainer);
+            const tabLikeToggles = document.createElement('div');
+            tabLikeToggles.className = 'like-settings-toggle-grid';
+            tabLikeToggles.appendChild(autoLikeRow);
+            tabLikeToggles.appendChild(stopOnLikeLimitRow);
+            tabLikeSettings.appendChild(tabLikeToggles);
+            tabLikeSettings.appendChild(tabLikeOverview);
+            const tabLikeFilters = document.createElement('div');
+            tabLikeFilters.className = 'like-settings-filter-grid';
+            tabLikeFilters.appendChild(likeFilterModeRow);
+            tabLikeFilters.appendChild(likeMinThresholdRow);
+            tabLikeSettings.appendChild(tabLikeFilters);
+            tabLikeSettings.appendChild(this.clearCooldownBtn);
+            tab3Content.appendChild(tabLikeSettings);
+
             // 帖子获取状态显示区域（标签页模式）
             this.topicStatusContainer = document.createElement("div");
             this.topicStatusContainer.className = "topic-status-container";
@@ -4699,6 +4839,27 @@ class BrowseController {
             this.autoSectionContent.appendChild(likeMinThresholdRow2);
             this.autoSectionContent.appendChild(readSpeedRow);
             this.autoSectionContent.appendChild(stopAfterReadCountRow);
+
+            const collapseLikeSettings = document.createElement('div');
+            collapseLikeSettings.className = 'like-settings-card';
+            collapseLikeSettings.innerHTML = `<div class="like-settings-title">${this.t('likeSettings')}</div>`;
+            const collapseLikeOverview = document.createElement('div');
+            collapseLikeOverview.className = 'like-settings-overview';
+            collapseLikeOverview.appendChild(this.autoLikeStatusContainer);
+            collapseLikeOverview.appendChild(this.likeCounterContainer);
+            const collapseLikeToggles = document.createElement('div');
+            collapseLikeToggles.className = 'like-settings-toggle-grid';
+            collapseLikeToggles.appendChild(autoLikeRow);
+            collapseLikeToggles.appendChild(stopOnLikeLimitRow);
+            collapseLikeSettings.appendChild(collapseLikeToggles);
+            collapseLikeSettings.appendChild(collapseLikeOverview);
+            const collapseLikeFilters = document.createElement('div');
+            collapseLikeFilters.className = 'like-settings-filter-grid';
+            collapseLikeFilters.appendChild(likeFilterModeRow2);
+            collapseLikeFilters.appendChild(likeMinThresholdRow2);
+            collapseLikeSettings.appendChild(collapseLikeFilters);
+            collapseLikeSettings.appendChild(this.clearCooldownBtn);
+            this.autoSectionContent.appendChild(collapseLikeSettings);
 
             // 帖子获取状态显示区域
             this.topicStatusContainer = document.createElement("div");
@@ -6132,6 +6293,7 @@ class BrowseController {
             this.stopScrolling();
             this.stopNavigationGuard();
             this.autoRunning = false;
+            this.stopReadingTimer();
             this.setSessionStorage('autoRunning', false);
 
             // 更新按钮状态
@@ -6192,6 +6354,7 @@ class BrowseController {
                 if (this.autoRunning) {
                     console.log('[IP限流] 检测到自动阅读运行中，强制停止');
                     this.autoRunning = false;
+                    this.stopReadingTimer();
                     this.setSessionStorage('autoRunning', false);
                 }
 
@@ -7232,7 +7395,11 @@ class BrowseController {
                             this.fetchLowLevelUserData(username, userLevel).then(resolve).catch(reject);
                         } else if (userLevel >= 2) {
                             console.log(`检测到${userLevel}级用户，使用connect.linux.do页面数据`);
-                            this.processHighLevelUserData(tempDiv, globalUsername, currentLevel);
+                            const renderedFromConnect = this.processHighLevelUserData(tempDiv, globalUsername, currentLevel);
+                            if (renderedFromConnect === false) {
+                                reject(new Error('connect.linux.do account data parse failed'));
+                                return;
+                            }
                             resolve();
                         } else {
                             // 最后兜底：无法解析等级时，回退到 summary.json 获取数据
@@ -7352,8 +7519,7 @@ class BrowseController {
         // 方案4: 如果仍然找不到，回退到使用summary.json获取数据
         if (!targetInfoDiv) {
             console.log('未找到信任级别数据块，回退到使用summary.json');
-            this.fetchLowLevelUserData(globalUsername, parseInt(currentLevel));
-            return;
+            return false;
         }
 
         // 解析标题获取目标等级
@@ -8220,11 +8386,59 @@ class BrowseController {
         return true;
     }
 
+    formatReadingElapsed(milliseconds) {
+        const totalSeconds = Math.max(0, Math.floor((Number(milliseconds) || 0) / 1000));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const pad = value => String(value).padStart(2, '0');
+        return hours > 0 ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    getReadingElapsedMs() {
+        if (this.readingStartedAt > 0) return Math.max(0, Date.now() - this.readingStartedAt);
+        return this.lastReadingElapsedMs || 0;
+    }
+
+    startReadingTimer(resume = false) {
+        if (this.readingTimerInterval) clearInterval(this.readingTimerInterval);
+        if (!resume || !Number.isFinite(this.readingStartedAt) || this.readingStartedAt <= 0) {
+            this.readingStartedAt = Date.now();
+            this.lastReadingElapsedMs = 0;
+            this.setSessionStorage('lastReadingElapsedMs', 0);
+        }
+        this.setSessionStorage('readingStartedAt', this.readingStartedAt);
+        this.updateReadStatsDisplay();
+        this.readingTimerInterval = setInterval(() => {
+            if (!this.autoRunning) {
+                clearInterval(this.readingTimerInterval);
+                this.readingTimerInterval = null;
+                return;
+            }
+            this.updateReadStatsDisplay();
+        }, 1000);
+    }
+
+    stopReadingTimer() {
+        if (this.readingTimerInterval) {
+            clearInterval(this.readingTimerInterval);
+            this.readingTimerInterval = null;
+        }
+        if (this.readingStartedAt > 0) {
+            this.lastReadingElapsedMs = Math.max(0, Date.now() - this.readingStartedAt);
+            this.setSessionStorage('lastReadingElapsedMs', this.lastReadingElapsedMs);
+        }
+        this.readingStartedAt = 0;
+        this.setSessionStorage('readingStartedAt', 0);
+        this.updateReadStatsDisplay();
+    }
+
     // 更新阅读统计显示
     updateReadStatsDisplay() {
         if (!this.readStatsContainer) return;
 
         const todayCount = this.todayReadCount || 0;
+        const elapsedDisplay = this.formatReadingElapsed(this.getReadingElapsedMs());
         const remainingCount = this.getDisplayedRemainingCount();
         const officialReadDisplay = this.officialReadCountSyncing
             ? '…'
@@ -8232,6 +8446,8 @@ class BrowseController {
                 ? this.officialPostsReadCount
                 : '--';
 
+        this.readStatsContainer.style.display = 'grid';
+        this.readStatsContainer.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
         this.readStatsContainer.innerHTML = `
             <div style="text-align: center;">
                 <div style="font-size: 10px; color: rgba(255,255,255,0.7);">📅 ${this.t('todayRead')}</div>
@@ -8253,6 +8469,16 @@ class BrowseController {
             syncButton.disabled = this.officialReadCountSyncing;
             syncButton.addEventListener('click', () => void this.syncOfficialPostsReadCount(true), { once: true });
         }
+        Array.from(this.readStatsContainer.children).forEach(child => {
+            if (child instanceof HTMLDivElement && child.style.width === '1px') child.remove();
+        });
+        const accountSyncButton = this.readStatsContainer.querySelector('.official-posts-read-sync');
+        accountSyncButton?.insertAdjacentHTML('beforebegin', `
+            <div style="text-align: center; padding: 3px 0;">
+                <div style="font-size: 10px; color: rgba(255,255,255,0.7);">\u23F1\uFE0F ${this.t('readingTime')}</div>
+                <div style="font-size: 16px; font-weight: bold; color: #ffb86c; font-variant-numeric: tabular-nums;">${elapsedDisplay}</div>
+            </div>
+        `);
         this.container?.querySelectorAll('.tab-remaining-badge').forEach(badge => {
             badge.textContent = String(remainingCount);
         });
@@ -9020,6 +9246,15 @@ class BrowseController {
 
             // 开启自动阅读
             this.autoRunning = true;
+            this.currentSessionReadCount = 0;
+            this.lastCountedTopicId = null;
+            this.skippedReadCount = 0;
+            this.setSessionStorage('currentSessionReadCount', 0);
+            this.setSessionStorage('lastCountedTopicId', null);
+            this.setSessionStorage('skippedReadCount', 0);
+            this.autoLikeDecisionCache.clear();
+            this.startReadingTimer(false);
+
             this.setSessionStorage('autoRunning', true);
             this.hasRemainingHomeUnreadSnapshot = false;
             this.setSessionStorage('hasRemainingHomeUnreadSnapshot', false);
@@ -9215,7 +9450,13 @@ class BrowseController {
             // 计算概率：基于赞数的对数增长
             // 2赞 ≈ 20%, 5赞 ≈ 50%, 10赞 ≈ 70%, 20赞 ≈ 85%, 50赞 ≈ 95%
             const probability = Math.min(0.95, 0.2 + Math.log10(likeCount) * 0.35);
-            const random = Math.random();
+            const topicId = window.location.pathname.match(/\/t\/[^/]+\/(\d+)/)?.[1] || 'unknown';
+            const decisionKey = `${topicId}:${this.likeFilterMode}:${this.likeMinThreshold}`;
+            let random = this.autoLikeDecisionCache.get(decisionKey);
+            if (!Number.isFinite(random)) {
+                random = Math.random();
+                this.autoLikeDecisionCache.set(decisionKey, random);
+            }
 
             console.log(`[点赞过滤] 概率计算: ${(probability * 100).toFixed(1)}%, 随机值: ${(random * 100).toFixed(1)}%`);
 
@@ -9431,6 +9672,11 @@ class BrowseController {
         }
 
         const postId = this.getPostIdFromElement(firstPost);
+        if (!postId) {
+            console.warn('[Auto Like] Missing first-post ID; skipping this topic.');
+            this.updateAutoLikeStatus('autoLikeUnavailable');
+            return;
+        }
         const countBeforeClick = Number.isFinite(filterResult.likeCount)
             ? filterResult.likeCount
             : this.readPostLikeCountFromDom(firstPost);
@@ -9654,6 +9900,7 @@ class BrowseController {
         this.stopScrolling();
         this.stopNavigationGuard();
         this.autoRunning = false;
+        this.stopReadingTimer();
         this.setSessionStorage('autoRunning', false);
         this.awaitingHomeTopicClick = false;
         this.setSessionStorage('awaitingHomeTopicClick', false);
