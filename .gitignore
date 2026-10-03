@@ -1,0 +1,22 @@
+# Local credentials and private configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Editors, dependencies and generated output
+.vscode/
+.idea/
+node_modules/
+dist/
+build/
+coverage/
+*.log
+*.tmp
+*.zip
+*.crx
+.DS_Store
+Thumbs.db

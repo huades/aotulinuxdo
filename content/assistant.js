@@ -3622,6 +3622,9 @@ class BrowseController {
                 transform: scale(0.95);
             }
 
+            .linuxdo-helper-panel .repository-link { text-decoration: none; }
+            .linuxdo-helper-panel .repository-link:focus-visible { outline: 2px solid #98caff; outline-offset: 3px; }
+
             .minimized-icon {
                 position: absolute;
                 top: 0;
@@ -3764,6 +3767,37 @@ class BrowseController {
                 border-radius: 10px;
                 margin-top: 8px;
             }
+
+            .linuxdo-helper-panel .account-view { padding: 2px 0; }
+            .linuxdo-helper-panel .account-view .trust-level-header { gap: 8px; margin: 0 0 6px; text-shadow: none; }
+            .account-heading { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+            .account-heading strong { font-size: 13px; font-weight: 650; line-height: 1.4; }
+            .account-title-line { display: flex; align-items: center; gap: 7px; }
+            .account-level-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; font-size: 18px; flex-shrink: 0; background: rgba(255,255,255,.07); border-radius: 8px; }
+            .account-metric-label { min-width: 0; display: flex; flex: 1; align-items: center; gap: 8px; }
+            .account-metric-icon { font-size: 15px; width: 23px; flex: 0 0 23px; text-align: center; line-height: 1.4; }
+            .account-view .trust-level-item:hover { background: rgba(255,255,255,.035); }
+            .account-view .account-chip { border-radius: 6px; padding: 1px 6px; }
+            .account-view .account-summary { padding-top: 3px; }
+            .account-username { font-size: 10px; opacity: .65; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+            .linuxdo-helper-panel .account-view .trust-level-refresh { white-space: nowrap; border-radius: 8px; padding: 4px 8px; background: rgba(255,255,255,.1); }
+            .account-view .trust-level-refresh:focus-visible { outline: 2px solid #98caff; outline-offset: 3px; }
+            .account-meta { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; font-size: 10px; line-height: 1.5; margin-bottom: 6px; }
+            .account-chip { padding: 2px 6px; border-radius: 5px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.8); }
+            .account-updated { font-size: 10px; color: rgba(255,255,255,.55); line-height: 1.4; margin-bottom: 4px; }
+            .linuxdo-helper-panel .account-view .trust-level-item { margin: 0; padding: 4px 0; line-height: 1.4; border-bottom: 1px solid rgba(255,255,255,.06); gap: 8px; font-size: 11px; }
+            .linuxdo-helper-panel .account-view .trust-level-name { width: auto; min-width: 0; flex: 1; margin-right: 0; }
+            .linuxdo-helper-panel .account-view .trust-level-progress { flex: 0 0 auto; gap: 7px; }
+            .linuxdo-helper-panel .account-view .trust-level-bar { display: block; width: 30px; height: 3px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; }
+            .account-view .trust-level-bar-fill { background: #f2bb72; border-radius: 4px; }
+            .account-view .trust-level-bar-fill.completed { background: #87d4b0; }
+            .linuxdo-helper-panel .account-view .trust-level-value { font-variant-numeric: tabular-nums; min-width: 0; color: rgba(255,255,255,.9); font-size: 11px; }
+            .account-delta { font-size: 9px; border-radius: 4px; padding: 2px 4px; margin-left: 3px; }
+            .account-delta.is-good { color: #9de7be; background: rgba(107,207,153,.12); }
+            .account-delta.is-bad { color: #ffd095; background: rgba(241,182,102,.12); }
+            .account-summary { margin-top: 5px; font-size: 11px; display: flex; justify-content: space-between; gap: 8px; color: rgba(255,255,255,.75); line-height: 1.4; }
+            .account-summary.is-complete { color: #9de7be; }
+            @media (prefers-reduced-motion: reduce) { .account-view .trust-level-bar-fill { transition: none; } }
 
             .trust-level-header {
                 color: white;
@@ -4315,6 +4349,7 @@ class BrowseController {
         header.innerHTML = `
             <span class="panel-title">${this.t('panelTitle')}</span>
             <div class="panel-controls">
+                <a class="panel-control-btn repository-link" href="https://github.com/huades/aotulinuxdo" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository" title="GitHub repository"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .75a11.25 11.25 0 0 0-3.558 21.922c.563.105.768-.244.768-.542 0-.267-.01-.975-.015-1.914-3.13.68-3.79-1.508-3.79-1.508-.512-1.3-1.25-1.646-1.25-1.646-1.022-.699.077-.685.077-.685 1.13.08 1.724 1.16 1.724 1.16 1.005 1.722 2.637 1.225 3.28.937.103-.729.393-1.226.715-1.508-2.499-.284-5.126-1.25-5.126-5.568 0-1.23.44-2.234 1.16-3.022-.116-.285-.503-1.43.11-2.98 0 0 .945-.303 3.094 1.155A10.8 10.8 0 0 1 12 6.173c.956.004 1.92.129 2.82.378 2.148-1.458 3.091-1.155 3.091-1.155.615 1.55.228 2.695.113 2.98.722.788 1.158 1.792 1.158 3.022 0 4.33-2.632 5.28-5.14 5.559.405.35.766 1.042.766 2.1 0 1.517-.014 2.742-.014 3.114 0 .3.203.652.774.541A11.25 11.25 0 0 0 12 .75Z"/></svg></a>
                 <button class="panel-control-btn layout-toggle-btn" title="${layoutTitle}">${layoutIcon}</button>
                 <button class="panel-control-btn minimize-btn" title="${this.t('minimize')}">─</button>
             </div>
@@ -7020,11 +7055,97 @@ class BrowseController {
         return null;
     }
 
+    async getVerifiedTrustLevel(username) {
+        const key = `verifiedTrustLevel_${CURRENT_DOMAIN}_${username}`;
+        const cooldownKey = `trustLevel429Until_${CURRENT_DOMAIN}`;
+        // Discourse 已随当前页面提供登录用户信息，优先复用，避免跳转时请求接口。
+        try {
+            const preload = document.getElementById('data-preloaded');
+            const data = JSON.parse(preload?.dataset.preloaded || '{}');
+            const user = typeof data.currentUser === 'string' ? JSON.parse(data.currentUser) : data.currentUser;
+            if (user?.username?.toLowerCase() === username.toLowerCase() &&
+                Number.isInteger(user.trust_level) && user.trust_level >= 0 && user.trust_level <= 4) {
+                Storage.set(key, { level: user.trust_level, timestamp: Date.now() });
+                return user.trust_level;
+            }
+        } catch { /* 缺少页面数据时使用账户独立缓存。 */ }
+        const cached = Storage.get(key, null);
+        if (cached && Number.isInteger(cached.level) && cached.level >= 0 && cached.level <= 4 &&
+            Date.now() - cached.timestamp < 30 * 60 * 1000) return cached.level;
+        const cooldownUntil = Storage.get(cooldownKey, 0);
+        if (cooldownUntil > Date.now()) {
+            throw new Error(`等级接口限流，请在 ${Math.ceil((cooldownUntil - Date.now()) / 60000)} 分钟后重试`);
+        }
+        const response = await fetch(`${BASE_URL}/u/${encodeURIComponent(username)}.json`, {
+            credentials: 'include', headers: { Accept: 'application/json' },
+            signal: AbortSignal.timeout(15000)
+        });
+        if (response.status === 429) {
+            const retryAfter = response.headers.get('Retry-After');
+            const seconds = Number(retryAfter);
+            const retryTime = retryAfter && Number.isFinite(seconds)
+                ? Date.now() + Math.max(1, seconds) * 1000 : Date.parse(retryAfter || '');
+            Storage.set(cooldownKey, Number.isFinite(retryTime) && retryTime > Date.now()
+                ? retryTime : Date.now() + 30 * 60 * 1000);
+            throw new Error('等级接口请求过于频繁 (429)，已暂停重试；请稍后刷新');
+        }
+        if (!response.ok) throw new Error(`无法确认账户等级 (${response.status})`);
+        const data = await response.json();
+        const rawLevel = data.user?.trust_level;
+        const level = Number(rawLevel);
+        if (rawLevel === undefined || rawLevel === null || !Number.isInteger(level) || level < 0 || level > 4) {
+            throw new Error('账户未返回有效的信任等级');
+        }
+        Storage.set(key, { level, timestamp: Date.now() });
+        return level;
+    }
+
     // 加载用户信任等级
-    async loadUserTrustLevel(isManualRefresh = false) {
+    loadUserTrustLevel(isManualRefresh = false) {
+        if (this.trustLevelLoadPromise) return this.trustLevelLoadPromise;
+        const button = this.trustLevelContainer?.querySelector('.trust-level-refresh');
+        if (button) {
+            button.disabled = true;
+            button.textContent = '⏳ 加载中…';
+        }
+        this.trustLevelContainer?.setAttribute('aria-busy', 'true');
+        this.trustLevelLoadPromise = this.loadUserTrustLevelData(isManualRefresh).finally(() => {
+            this.trustLevelLoadPromise = null;
+            this.trustLevelContainer?.setAttribute('aria-busy', 'false');
+            const currentButton = this.trustLevelContainer?.querySelector('.trust-level-refresh');
+            if (currentButton) {
+                currentButton.disabled = false;
+                currentButton.textContent = '🔄 刷新';
+            }
+        });
+        return this.trustLevelLoadPromise;
+    }
+
+    renderTrustLevelError(error) {
+        const username = this.currentUsername;
+        const cached = username && Storage.get(`trustLevelCache_${CURRENT_DOMAIN}_${username}`, null);
+        const data = this.displayedTrustLevelData?.username === username ? this.displayedTrustLevelData :
+            (cached?.schemaVersion === 4 && cached.username === username ? cached : null);
+        if (data) {
+            this.renderCachedTrustLevel(data, data.updatedAt, true);
+            const notice = document.createElement('div');
+            notice.className = 'trust-level-error';
+            notice.setAttribute('role', 'status');
+            notice.style.cssText = 'font-size:11px;color:#ffd38a;margin-top:8px;line-height:1.5;';
+            notice.textContent = `刷新失败，保留上次数据：${error.message || '未知错误'}`;
+            this.trustLevelContainer.appendChild(notice);
+            return;
+        }
+        this.trustLevelContainer.innerHTML = '<div class="trust-level-header">📊 账户信息 <button type="button" class="trust-level-refresh">🔄 刷新</button></div><div class="trust-level-loading" role="status"></div><a href="https://connect.linux.do/" target="_blank" rel="noopener noreferrer">打开账户页，确认已登录后重试</a>';
+        this.trustLevelContainer.querySelector('.trust-level-loading').textContent = `加载失败：${error.message || '未知错误'}`;
+        this.bindTrustLevelRefresh();
+    }
+
+    async loadUserTrustLevelData(isManualRefresh = false) {
         const username = await this.getCurrentUsername();
         if (!username) {
             this.trustLevelContainer.innerHTML = '<div class="trust-level-loading">未登录</div>';
+            this.displayedTrustLevelData = null;
             return;
         }
 
@@ -7033,11 +7154,35 @@ class BrowseController {
         const cacheKey = `trustLevelCache_${CURRENT_DOMAIN}_${username}`;
         const lastFetchKey = `lastTrustLevelFetch_${CURRENT_DOMAIN}_${username}`;
         const lastFetch = Storage.get(lastFetchKey, 0);
+        const accountCache = Storage.get(cacheKey, null);
+        if (!isManualRefresh && accountCache?.schemaVersion === 4 && accountCache.username === username &&
+            (this.autoRunning || (lastFetch > 0 && now - lastFetch < TRUST_LEVEL_CACHE_INTERVAL))) {
+            this.renderCachedTrustLevel(accountCache, lastFetch);
+            return;
+        }
+        let verifiedLevel;
+        let connectPage;
+        try {
+            if (CURRENT_DOMAIN === 'linux.do') {
+                connectPage = await chrome.runtime.sendMessage({ type: 'AUTOLINUXDO_CONNECT_ACCOUNT', username,
+                    ensurePage: true, refreshPage: isManualRefresh })
+                    .catch(error => ({ ok: false, error: error.message }));
+                if (connectPage?.ok && Number.isInteger(connectPage.account?.level)) {
+                    verifiedLevel = connectPage.account.level;
+                    Storage.set(`verifiedTrustLevel_${CURRENT_DOMAIN}_${username}`, { level: verifiedLevel, timestamp: Date.now() });
+                } else verifiedLevel = await this.getVerifiedTrustLevel(username);
+            }
+        } catch (error) {
+            this.renderTrustLevelError(error);
+            console.warn('[信任等级]', error);
+            return;
+        }
 
         // 非手动刷新时，检查30分钟缓存
         if (!isManualRefresh && lastFetch > 0 && (now - lastFetch) < TRUST_LEVEL_CACHE_INTERVAL) {
             const cachedData = Storage.get(cacheKey, null);
-            if (cachedData) {
+            if (cachedData && (CURRENT_DOMAIN !== 'linux.do' ||
+                (cachedData.schemaVersion === 4 && cachedData.currentLevel === verifiedLevel))) {
                 console.log('使用缓存的等级数据，距上次获取:', Math.round((now - lastFetch) / 1000 / 60), '分钟');
                 this.renderCachedTrustLevel(cachedData, lastFetch);
                 return;
@@ -7068,47 +7213,33 @@ class BrowseController {
                 throw new Error('无法获取等级数据');
             } else if (CURRENT_DOMAIN === 'linux.do') {
                 // linux.do: 完全使用 1.js 的逻辑（使用GM_xmlhttpRequest跨域请求）
-                await this.fetchLinuxDoDataWithGM(username);
+                if (verifiedLevel < 2) await this.fetchLowLevelUserData(username, verifiedLevel);
+                else await this.fetchLinuxDoDataWithGM(username, verifiedLevel, connectPage);
             }
         } catch (error) {
             console.error('加载信任等级失败:', error);
-            this.trustLevelContainer.innerHTML = `
-                <div class="trust-level-header">
-                    📊 信任等级
-                    <button class="trust-level-refresh" data-action="refresh">🔄 刷新</button>
-                </div>
-                <div class="trust-level-loading">加载失败，请点击刷新重试</div>
-            `;
-            this.bindTrustLevelRefresh();
-        } finally {
-            // 恢复刷新按钮状态
-            if (isManualRefresh) {
-                setTimeout(() => {
-                    const refreshBtn = this.trustLevelContainer.querySelector('.trust-level-refresh');
-                    if (refreshBtn) {
-                        refreshBtn.textContent = '🔄 刷新';
-                        refreshBtn.disabled = false;
-                    }
-                }, 1000);
-            }
+            this.renderTrustLevelError(error);
         }
     }
 
     // 保存等级数据缓存（区分域名）
     saveTrustLevelCache(username, data) {
+        data.schemaVersion = 4;
+        data.updatedAt = Date.now();
         const cacheKey = `trustLevelCache_${CURRENT_DOMAIN}_${username}`;
         const lastFetchKey = `lastTrustLevelFetch_${CURRENT_DOMAIN}_${username}`;
         Storage.set(cacheKey, data);
-        Storage.set(lastFetchKey, Date.now());
+        Storage.set(lastFetchKey, data.updatedAt);
         console.log(`等级数据已缓存 (${CURRENT_DOMAIN})`);
 
         // 保存每日历史快照
         this.saveDailySnapshot(username, data);
+        this.renderCachedTrustLevel(data, data.updatedAt, false);
     }
 
     // 保存每日历史快照（用于追踪数据变化）
     saveDailySnapshot(username, data) {
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 格式
+        const today = this.getAccountDayKey();
         const historyKey = `trustLevelHistory_${CURRENT_DOMAIN}_${username}`;
         const history = Storage.get(historyKey, {});
 
@@ -7119,6 +7250,7 @@ class BrowseController {
             type: data.type,
             currentLevel: data.currentLevel,
             targetLevel: data.targetLevel,
+            periodDays: data.periodDays,
             items: (data.items || data.requirements || []).map(item => {
                 // 统一处理数值提取
                 let currentNum = item.current;
@@ -7137,11 +7269,7 @@ class BrowseController {
                 // 简化标签名称（与渲染时保持一致，确保匹配）
                 let simpleName = item.name
                     .replace('已读帖子（所有时间）', '浏览帖子')
-                    .replace('浏览的话题（所有时间）', '浏览话题')
-                    .replace('访问次数（过去', '访问次数(')
-                    .replace('个月）', '月)')
-                    .replace('回复次数（最近', '回复(近')
-                    .replace('天内）', '天)');
+                    .replace('浏览的话题（所有时间）', '浏览话题');
 
                 return {
                     name: simpleName,
@@ -7165,6 +7293,10 @@ class BrowseController {
         console.log(`等级历史快照已保存 (${today})`);
     }
 
+    getAccountDayKey(date = new Date()) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
     // 获取昨日的等级数据快照
     getYesterdaySnapshot(username) {
         const historyKey = `trustLevelHistory_${CURRENT_DOMAIN}_${username}`;
@@ -7173,7 +7305,7 @@ class BrowseController {
         // 获取昨天的日期
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        const yesterdayStr = this.getAccountDayKey(yesterday);
 
         return history[yesterdayStr] || null;
     }
@@ -7183,7 +7315,7 @@ class BrowseController {
         if (!yesterdaySnapshot || !yesterdaySnapshot.items) return null;
 
         const yesterdayItem = yesterdaySnapshot.items.find(item => item.name === itemName);
-        if (!yesterdayItem) return null;
+        if (!yesterdayItem || yesterdayItem.current === null || yesterdayItem.current === undefined) return null;
 
         const diff = currentValue - yesterdayItem.current;
         return diff;
@@ -7201,240 +7333,122 @@ class BrowseController {
         return ''; // 无变化不显示
     }
 
-    // 渲染缓存的等级数据
-    renderCachedTrustLevel(cachedData, lastFetch) {
-        if (!cachedData) return;
-
-        const { type, username, currentLevel, targetLevel, items, requirements, achievedCount, totalCount, allMet } = cachedData;
-
-        // 计算缓存时间显示
-        const cacheAge = Date.now() - lastFetch;
-        const cacheMinutes = Math.floor(cacheAge / 1000 / 60);
-        const cacheTimeText = cacheMinutes < 1 ? '刚刚' : `${cacheMinutes}分钟前`;
-
-        // 等级名称映射
-        const levelNames = {
-            0: 'Lv0 → Lv1',
-            1: 'Lv1 → Lv2',
-            2: 'Lv1 → Lv2',
-            3: 'Lv2 → Lv3',
-            4: 'Lv3 → Lv4'
-        };
-
-        // 获取昨日数据用于对比
-        const yesterdaySnapshot = this.getYesterdaySnapshot(username);
-
-        // 判断是否已满足所有要求，决定标题显示
-        const isAllMetForHeader = type === 'low_level' ? allMet : (achievedCount === totalCount);
-        const headerTitle = isAllMetForHeader
-            ? `Lv${targetLevel} ✓`
-            : (levelNames[type === 'low_level' ? currentLevel : targetLevel] || `Lv${currentLevel} → Lv${targetLevel}`);
-
-        let html = `
-            <div class="trust-level-header">
-                <span>📊 ${headerTitle} (${username})</span>
-                <button class="trust-level-refresh" data-action="refresh">🔄 刷新</button>
-            </div>
-            <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 4px; text-align: right;">缓存: ${cacheTimeText}</div>
-        `;
-
-        // 根据类型渲染不同的数据
-        const displayItems = type === 'low_level' ? items : requirements;
-
-        displayItems.forEach(req => {
-            let currentNum, requiredNum, displayCurrent, displayRequired;
-
-            if (type === 'low_level') {
-                currentNum = req.current;
-                requiredNum = req.required;
-                displayCurrent = req.current;
-                displayRequired = req.required;
-            } else {
-                // 高级等级：从文本中提取数字
-                const currentMatch = req.current.match(/(\d+)/);
-                const requiredMatch = req.required.match(/(\d+)/);
-                currentNum = currentMatch ? parseInt(currentMatch[1]) : 0;
-                requiredNum = requiredMatch ? parseInt(requiredMatch[1]) : 1;
-                displayCurrent = req.current;
-                displayRequired = req.required;
-            }
-
-            const progress = Math.min((currentNum / requiredNum) * 100, 100);
-            const isCompleted = req.isMet;
-            const fillClass = isCompleted ? 'completed' : '';
-
-            // 简化标签名称
-            let simpleName = req.name
-                .replace('已读帖子（所有时间）', '浏览帖子')
-                .replace('浏览的话题（所有时间）', '浏览话题')
-                .replace('访问次数（过去', '访问次数(')
-                .replace('个月）', '月)')
-                .replace('回复次数（最近', '回复(近')
-                .replace('天内）', '天)');
-
-            // 计算与昨日的变化
-            const diff = this.calculateDataChange(currentNum, yesterdaySnapshot, simpleName);
-            const changeIndicator = this.generateChangeIndicator(diff);
-
-            html += `
-                <div class="trust-level-item">
-                    <span class="trust-level-name">${simpleName}</span>
-                    <div class="trust-level-progress">
-                        <div class="trust-level-bar">
-                            <div class="trust-level-bar-fill ${fillClass}" style="width: ${progress}%"></div>
-                        </div>
-                        <span class="trust-level-value">${displayCurrent}/${displayRequired}${changeIndicator}</span>
-                    </div>
-                </div>
-            `;
-        });
-
-        // 添加总结信息
-        const isAllMet = type === 'low_level' ? allMet : (achievedCount === totalCount);
-        if (isAllMet) {
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.25); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: #fff; font-size: 11px; font-weight: 600; text-align: center;">
-                        ✅ 已满足 Lv${targetLevel} 要求
-                    </div>
-                </div>
-            `;
-        } else {
-            const unmetCount = totalCount - achievedCount;
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.15); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 11px; font-weight: 500; text-align: center;">
-                        还需完成 ${unmetCount} 项升级到 Lv${targetLevel}
-                    </div>
-                </div>
-            `;
+    getTrustLevelTitle(currentLevel, targetLevel, allMet) {
+        if (currentLevel >= 3) {
+            return `Lv${currentLevel} · ${targetLevel === currentLevel ? '保持条件' : '账户条件'}`;
         }
+        return `当前 Lv${currentLevel} · 升级至 Lv${targetLevel}`;
+    }
 
+    // 首次加载和缓存共用一个展示入口；缓存渲染不修改更新时间。
+    renderCachedTrustLevel(data, lastFetch, isCached = true) {
+        if (!data) return;
+        this.displayedTrustLevelData = { ...data, updatedAt: data.updatedAt || lastFetch };
+        const escape = value => String(value ?? '').replace(/[&<>"']/g, char =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        const lowLevel = data.type === 'low_level';
+        const sourceItems = lowLevel ? data.items : data.requirements;
+        const order = [/访问/, /浏览.*话题|进入主题/, /浏览帖子|已读帖子|阅读帖子/, /阅读.*时/, /回复|帖子数量/, /给出|送出|^点赞$/, /收到|^获赞$/, /获赞.*天|单日/, /获赞.*用户|点赞用户/, /举报/, /禁言/, /封禁/];
+        const rank = name => { const index = order.findIndex(pattern => pattern.test(name)); return index < 0 ? order.length : index; };
+        const items = (sourceItems || []).map(req => {
+            const current = AutoLinuxDoAccount.number(req.current);
+            const required = AutoLinuxDoAccount.number(req.required);
+            const known = current !== null && required !== null;
+            const reverse = /举报|禁言|封禁/.test(req.name);
+            const met = known && (typeof req.isMet === 'boolean' ? req.isMet : (reverse ? current <= required : current >= required));
+            const name = req.name.replace('已读帖子（所有时间）', '浏览帖子').replace('浏览的话题（所有时间）', '浏览话题');
+            // 反向指标是允许上限，使用达标状态条，避免“违规越多进度越高”。
+            const progress = !known ? 0 : reverse ? (met ? 100 : 0) :
+                required > 0 ? Math.max(0, Math.min(current / required * 100, 100)) : (met ? 100 : 0);
+            return { ...req, name, current, required, known, reverse, met, progress };
+        }).sort((a, b) => rank(a.name) - rank(b.name));
+        const timestamp = data.updatedAt || lastFetch;
+        const updated = timestamp ? new Date(timestamp).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) : '未知';
+        const period = lowLevel ? '累计统计' : data.periodDays === 100 ? '过去100天' : '统计范围以字段标注为准';
+        const title = this.getTrustLevelTitle(data.currentLevel, data.targetLevel, false);
+        const levelIcon = ['🌱', '🌿', '🌳', '💎', '👑'][data.currentLevel] || '👤';
+        const metricIcons = [
+            [/访问/, '📅'], [/浏览.*话题|进入主题/, '🗂️'], [/浏览帖子|已读帖子|阅读帖子/, '📖'],
+            [/阅读.*时/, '⏱️'], [/回复|帖子数量/, '💬'], [/获赞.*用户|点赞用户/, '👥'],
+            [/获赞.*天|单日/, '🌟'], [/给出|送出|^点赞$/, '👍'], [/收到|获赞/, '❤️'],
+            [/发起举报.*用户|举报用户/, '🚩'], [/举报/, '⚠️'], [/禁言/, '🔇'], [/封禁/, '🚫']
+        ];
+        const yesterday = this.getYesterdaySnapshot(data.username);
+        const comparable = yesterday && yesterday.type === data.type && yesterday.currentLevel === data.currentLevel &&
+            yesterday.targetLevel === data.targetLevel && yesterday.periodDays === data.periodDays;
+        let html = `
+            <div class="account-view"><div class="trust-level-header">
+                <span class="account-title-line"><span class="account-level-icon" aria-hidden="true">${levelIcon}</span><span class="account-heading"><strong>${escape(title)}</strong><span class="account-username">👤 @${escape(data.username)}</span></span></span>
+                <button type="button" class="trust-level-refresh">🔄 刷新</button>
+            </div>
+            <div class="account-meta"><span class="account-chip">🗓️ ${period}</span><span class="account-chip">${lowLevel ? '🏠 论坛统计' : '🔗 Connect'}</span>${isCached ? '<span class="account-chip">📦 缓存</span>' : ''}</div>
+            <div class="account-updated">🕒 更新 ${updated} · ${comparable ? '📈 数值旁显示较昨日变化' : yesterday ? '🔄 统计口径变化，暂停昨日对比' : '🌙 暂无昨日记录'}</div>`;
+        items.forEach(item => {
+            const diff = comparable && item.known ? this.calculateDataChange(item.current, yesterday, item.name) : null;
+            const change = diff == null || diff === 0 ? '' : `<span class="account-delta ${(item.reverse ? diff < 0 : diff > 0) ? 'is-good' : 'is-bad'}" title="较昨日 ${diff > 0 ? '+' : ''}${diff}">${diff > 0 ? '+' : ''}${diff}</span>`;
+            const value = item.known ? `${item.current}/${item.required}` : '未获取';
+            const scopeMatch = item.name.match(/[（(]([^）)]+)[）)]/);
+            const scope = scopeMatch?.[1] || (lowLevel ? '累计' : data.periodDays === 100 ? '过去100天' : '以账户页为准');
+            const state = !item.known ? '未获取' : item.met ? '已达标' : '未达标';
+            const icon = metricIcons.find(([pattern]) => pattern.test(item.name))?.[1] || '📊';
+            html += `<div class="trust-level-item" title="${escape(scope)} · ${item.reverse ? '不高于要求值' : '不低于要求值'} · ${state}">
+                <span class="account-metric-label"><span class="account-metric-icon" aria-hidden="true">${icon}</span><span class="trust-level-name">${escape(item.name)}</span></span>
+                <div class="trust-level-progress"><div class="trust-level-bar">
+                    <div class="trust-level-bar-fill ${item.met ? 'completed' : ''}" style="width:${item.progress}%"></div>
+                </div><span class="trust-level-value" style="${item.reverse && !item.met && item.known ? 'color:#ff9b91;' : ''}">${value}${change}</span></div>
+            </div>`;
+        });
+        const missing = items.filter(item => !item.known).length;
+        const unmet = items.filter(item => item.known && !item.met).length;
+        const summary = missing ? `还有 ${unmet} 项未达标 · ${missing} 项未获取` :
+            unmet ? `还有 ${unmet} 项未达标` : items.length ? '当前条件均已达标' : '未获取到指标';
+        const achieved = items.filter(item => item.met).length;
+        html += `<div class="account-summary ${!missing && !unmet && items.length ? 'is-complete' : ''}" role="status"><span>${missing ? '🔎' : unmet ? '🎯' : '✅'} ${summary}</span><span>🏅 ${achieved}/${items.length} 达标</span></div></div>`;
         this.trustLevelContainer.innerHTML = html;
-
         this.bindTrustLevelRefresh();
     }
 
-    // 使用 GM_xmlhttpRequest 获取 linux.do 数据（完全按照1.js的逻辑）
-    async fetchLinuxDoDataWithGM(username) {
+    // Lv2+ 只读取 connect 账户条件，失败时由加载入口统一展示错误。
+    async fetchLinuxDoDataWithGM(username, verifiedLevel, connectPage) {
+        const openedPage = connectPage || await chrome.runtime.sendMessage({
+            type: 'AUTOLINUXDO_CONNECT_ACCOUNT', username
+        }).catch(error => ({ ok: false, error: error.message }));
+        const renderResponse = response => {
+            const page = document.createElement('div');
+            page.innerHTML = response.responseText;
+            if (/\/login(?:[/?#]|$)|\/auth\//i.test(response.finalUrl || '') ||
+                (page.querySelector('input[type="password"]') && !page.querySelector('.tl3-ring, .tl3-bar-item, table'))) {
+                throw new Error('connect.linux.do 尚未登录，请先打开账户页登录');
+            }
+            if (!this.processHighLevelUserData(page, username, verifiedLevel)) {
+                throw new Error('connect.linux.do 未找到当前等级对应的账户条件');
+            }
+        };
+        if (openedPage?.ok) {
+            renderResponse(openedPage);
+            return;
+        }
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
-                method: "GET",
-                url: "https://connect.linux.do/",
+                method: 'GET',
+                url: 'https://connect.linux.do/',
                 timeout: 15000,
-                onload: (response) => {
-                    if (response.status === 200) {
-                        const responseText = response.responseText;
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = responseText;
-
-                        // 1. 解析全局用户名和当前等级 (从 <h1>)
-                        let globalUsername = username;
-                        let currentLevel = '未知';
-                        const h1 = tempDiv.querySelector('h1');
-                        if (h1) {
-                            const h1Text = h1.textContent.trim();
-                            // 例如: "你好，一剑万生 (YY_WD) 2级用户" 或 "你好， (yy2025) 0级用户"
-                            const welcomeMatch = h1Text.match(/你好，\s*([^(\s]*)\s*\(?([^)]*)\)?\s*(\d+)级用户/i);
-                            if (welcomeMatch) {
-                                // 优先使用括号内的用户名，如果没有则使用前面的
-                                globalUsername = welcomeMatch[2] || welcomeMatch[1] || username;
-                                currentLevel = welcomeMatch[3];
-                                console.log(`从<h1>解析: 用户名='${globalUsername}', 当前等级='${currentLevel}'`);
-                            }
-                        }
-
-                        // 检查用户等级，决定使用哪种数据获取方式
-                        let userLevel = parseInt(currentLevel);
-
-                        // 如果从 <h1> 无法解析等级，尝试从页面文本判断
-                        if (isNaN(userLevel)) {
-                            const pageText = tempDiv.textContent || '';
-
-                            // 方法1: 检测 "信任级别 X 的要求" + "已达到/未达到" 模式
-                            // 例如: "信任级别 3 的要求 已达到" 表示用户等级为3
-                            // 例如: "信任级别 3 的要求 未达到" 表示用户等级为2
-                            const levelRequirementMatch = pageText.match(/信任级别\s*(\d+)\s*的要求\s*(已达到|未达到)/);
-                            if (levelRequirementMatch) {
-                                const targetLevel = parseInt(levelRequirementMatch[1]);
-                                const status = levelRequirementMatch[2];
-                                if (status === '已达到') {
-                                    userLevel = targetLevel;
-                                    console.log(`检测到"已达到信任级别${targetLevel}的要求"，用户等级: ${userLevel}`);
-                                } else {
-                                    // 未达到表示等级比目标低一级
-                                    userLevel = targetLevel - 1;
-                                    console.log(`检测到"未达到信任级别${targetLevel}的要求"，用户等级: ${userLevel}`);
-                                }
-                                currentLevel = String(userLevel);
-                            }
-
-                            // 方法2: 检测 "已达到/不符合信任级别 X 要求" 模式
-                            // 例如: "已达到信任级别 3 要求，请保持" 表示用户等级为3
-                            // 例如: "不符合信任级别 3 要求，继续加油" 表示用户等级为2
-                            if (isNaN(userLevel)) {
-                                const statusMatch = pageText.match(/(已达到|不符合)信任级别\s*(\d+)\s*要求/);
-                                if (statusMatch) {
-                                    const status = statusMatch[1];
-                                    const targetLevel = parseInt(statusMatch[2]);
-                                    if (status === '已达到') {
-                                        userLevel = targetLevel;
-                                        console.log(`检测到"已达到信任级别${targetLevel}要求"，用户等级: ${userLevel}`);
-                                    } else {
-                                        // 不符合表示等级比目标低一级
-                                        userLevel = targetLevel - 1;
-                                        console.log(`检测到"不符合信任级别${targetLevel}要求"，用户等级: ${userLevel}`);
-                                    }
-                                    currentLevel = String(userLevel);
-                                }
-                            }
-                        }
-
-                        if (userLevel === 0 || userLevel === 1) {
-                            console.log(`检测到${userLevel}级用户，使用summary.json获取数据`);
-                            this.fetchLowLevelUserData(username, userLevel).then(resolve).catch(reject);
-                        } else if (userLevel >= 2) {
-                            console.log(`检测到${userLevel}级用户，使用connect.linux.do页面数据`);
-                            const renderedFromConnect = this.processHighLevelUserData(tempDiv, globalUsername, currentLevel);
-                            if (renderedFromConnect === false) {
-                                reject(new Error('connect.linux.do account data parse failed'));
-                                return;
-                            }
-                            resolve();
-                        } else {
-                            // 最后兜底：无法解析等级时，回退到 summary.json 获取数据
-                            console.log('无法从 connect.linux.do 解析等级，回退到 summary.json');
-                            this.fetchLowLevelUserData(username, 1).then(resolve).catch(reject);
-                        }
-                    } else {
-                        // connect.linux.do 可能被 Cloudflare/权限策略拦截（常见 403）
-                        // 降级到 summary.json，避免直接报错导致“加载信任等级失败”
-                        console.warn(`[信任等级] connect.linux.do 请求失败(${response.status})，降级到 summary.json`);
-                        this.fetchSummaryTrustLevelFallback(username)
-                            .then(resolve)
-                            .catch((fallbackErr) => {
-                                reject(new Error(`请求失败，状态码: ${response.status}；降级也失败: ${fallbackErr.message}`));
-                            });
+                onload: response => {
+                    if (response.status !== 200) {
+                        reject(new Error(response.status === 403
+                            ? `Connect 拒绝后台请求 (403)。${openedPage?.error || '请打开账户页登录后重试'}`
+                            : `connect.linux.do 请求失败 (${response.status})`));
+                        return;
+                    }
+                    try {
+                        renderResponse(response);
+                        resolve();
+                    } catch (error) {
+                        reject(error);
                     }
                 },
-                onerror: (error) => {
-                    console.error('GM_xmlhttpRequest 错误:', error);
-                    // 网络异常时也降级
-                    this.fetchSummaryTrustLevelFallback(username)
-                        .then(resolve)
-                        .catch((fallbackErr) => {
-                            reject(new Error(`网络请求错误；降级也失败: ${fallbackErr.message}`));
-                        });
-                },
-                ontimeout: () => {
-                    console.error('GM_xmlhttpRequest 超时');
-                    // 超时时也降级
-                    this.fetchSummaryTrustLevelFallback(username)
-                        .then(resolve)
-                        .catch((fallbackErr) => {
-                            reject(new Error(`请求超时；降级也失败: ${fallbackErr.message}`));
-                        });
-                }
+                onerror: error => reject(new Error(`connect.linux.do 请求失败：${error?.message || '网络异常'}`)),
+                ontimeout: () => reject(new Error('connect.linux.do 请求超时'))
             });
         });
     }
@@ -7451,174 +7465,12 @@ class BrowseController {
         }
     }
 
-    // connect.linux.do 不可用时的降级逻辑
-    async fetchSummaryTrustLevelFallback(username) {
-        const safeUsername = encodeURIComponent(username || '');
-        const summaryResponse = await fetch(`${BASE_URL}/u/${safeUsername}/summary.json`, {
-            credentials: 'include'
-        });
-
-        if (!summaryResponse.ok) {
-            throw new Error(`summary.json 请求失败(${summaryResponse.status})`);
-        }
-
-        const data = await summaryResponse.json();
-        if (!data || !data.user_summary) {
-            throw new Error('summary.json 返回数据不完整');
-        }
-
-        // 复用现有渲染逻辑：
-        // TL0/TL1 走配置化进度；TL2+ 走默认展示
-        this.renderTrustLevel(data, username);
-    }
 
     // 处理2级及以上用户数据
-    processHighLevelUserData(tempDiv, globalUsername, currentLevel) {
-        let targetInfoDiv = null;
-
-        // 方案1: 新版页面结构 - div.card 包含 h2.card-title
-        const cardDivs = tempDiv.querySelectorAll('div.card');
-        for (let i = 0; i < cardDivs.length; i++) {
-            const div = cardDivs[i];
-            const h2 = div.querySelector('h2.card-title');
-            if (h2 && h2.textContent.includes('信任级别') && h2.textContent.includes('的要求')) {
-                targetInfoDiv = div;
-                break;
-            }
-        }
-
-        // 方案2: 旧版页面结构 - div.bg-white.p-6.rounded-lg
-        if (!targetInfoDiv) {
-            const potentialDivs = tempDiv.querySelectorAll('div.bg-white.p-6.rounded-lg');
-            for (let i = 0; i < potentialDivs.length; i++) {
-                const div = potentialDivs[i];
-                const h2 = div.querySelector('h2');
-                if (h2 && h2.textContent.includes('信任级别')) {
-                    targetInfoDiv = div;
-                    break;
-                }
-            }
-        }
-
-        // 方案3: 通用查找 - 任何包含"信任级别 X 的要求"的容器
-        if (!targetInfoDiv) {
-            const allDivs = tempDiv.querySelectorAll('div');
-            for (let i = 0; i < allDivs.length; i++) {
-                const div = allDivs[i];
-                const headings = div.querySelectorAll('h1, h2, h3');
-                for (let j = 0; j < headings.length; j++) {
-                    if (headings[j].textContent.includes('信任级别') && headings[j].textContent.includes('的要求')) {
-                        targetInfoDiv = div;
-                        break;
-                    }
-                }
-                if (targetInfoDiv) break;
-            }
-        }
-
-        // 方案4: 如果仍然找不到，回退到使用summary.json获取数据
-        if (!targetInfoDiv) {
-            console.log('未找到信任级别数据块，回退到使用summary.json');
-            return false;
-        }
-
-        // 解析标题获取目标等级
-        const h2 = targetInfoDiv.querySelector('h2');
-        const titleMatch = h2.textContent.match(/信任级别\s*(\d+)\s*的要求/);
-        const targetLevel = titleMatch ? titleMatch[1] : '未知';
-
-        // 解析数据 - 优先尝试新版视觉组件，回退到旧版表格
-        const requirements = [];
-
-        // === 新版页面结构: 环形图 + 条形图 + 配额卡片 + 否决项 ===
-        // 1. 解析环形图 (tl3-ring) - 活跃程度指标
-        const rings = targetInfoDiv.querySelectorAll('.tl3-ring');
-        rings.forEach((ring) => {
-            const label = ring.querySelector('.tl3-ring-label');
-            const circle = ring.querySelector('.tl3-ring-circle');
-            const currentEl = ring.querySelector('.tl3-ring-current');
-            const targetEl = ring.querySelector('.tl3-ring-target');
-            if (label && currentEl) {
-                const name = label.textContent.trim();
-                const current = currentEl.textContent.trim();
-                // 从 "/ 50" 格式中提取要求值
-                const required = targetEl ? targetEl.textContent.replace(/^[\s/]+/, '').trim() : '';
-                const isMet = circle ? circle.classList.contains('met') : false;
-                requirements.push({ name, current, required, isMet });
-            }
-        });
-
-        // 2. 解析条形图 (tl3-bar-item) - 互动参与指标
-        const bars = targetInfoDiv.querySelectorAll('.tl3-bar-item');
-        bars.forEach((bar) => {
-            const labelEl = bar.querySelector('.tl3-bar-label');
-            const numsEl = bar.querySelector('.tl3-bar-nums');
-            if (labelEl && numsEl) {
-                const name = labelEl.textContent.trim();
-                const numsText = numsEl.textContent.trim(); // 格式: "116/10"
-                const parts = numsText.split('/');
-                const current = parts[0] ? parts[0].trim() : numsText;
-                const required = parts[1] ? parts[1].trim() : '';
-                const isMet = numsEl.classList.contains('met');
-                requirements.push({ name, current, required, isMet });
-            }
-        });
-
-        // 3. 解析配额卡片 (tl3-quota-card) - 合规记录指标
-        const quotas = targetInfoDiv.querySelectorAll('.tl3-quota-card');
-        quotas.forEach((quota) => {
-            const labelEl = quota.querySelector('.tl3-quota-label');
-            const numsEl = quota.querySelector('.tl3-quota-nums');
-            if (labelEl && numsEl) {
-                const name = labelEl.textContent.trim();
-                const numsText = numsEl.textContent.trim(); // 格式: "0 / 5"
-                const parts = numsText.split('/');
-                const current = parts[0] ? parts[0].trim() : numsText;
-                const required = parts[1] ? parts[1].trim() : '';
-                const isMet = quota.classList.contains('met');
-                requirements.push({ name, current, required, isMet });
-            }
-        });
-
-        // 4. 解析否决项 (tl3-veto-item) - 被禁言/被封禁
-        const vetos = targetInfoDiv.querySelectorAll('.tl3-veto-item');
-        vetos.forEach((veto) => {
-            const labelEl = veto.querySelector('.tl3-veto-label');
-            const valueEls = veto.querySelectorAll('.tl3-veto-value');
-            if (labelEl && valueEls.length) {
-                const name = labelEl.textContent.trim();
-                const isMet = veto.classList.contains('met');
-                let current = '0';
-                const required = '0'; // 否决项要求为0
-
-                if (isMet) {
-                    current = valueEls[0].textContent.trim() || '0';
-                } else {
-                    // 未达标时，前面通常是 front(展示 0)，后面是 back(真实值)，优先取最后一个
-                    current = valueEls[valueEls.length - 1].textContent.trim() || '0';
-                }
-
-                requirements.push({ name, current, required, isMet });
-            }
-        });
-
-        // === 旧版页面结构回退: 表格解析 ===
-        if (requirements.length === 0) {
-            const tableRows = targetInfoDiv.querySelectorAll('table tbody tr');
-            tableRows.forEach((row) => {
-                const cells = row.querySelectorAll('td');
-                if (cells.length >= 3) {
-                    const name = cells[0].textContent.trim();
-                    const required = cells[1].textContent.trim();
-                    const current = cells[2].textContent.trim();
-                    const isMet = cells[2].classList.contains('status-met') || cells[2].classList.contains('text-green-500');
-                    requirements.push({ name, current, required, isMet });
-                }
-            });
-        }
-
-        // 渲染高级等级信息
-        this.renderAdvancedTrustLevel(globalUsername, targetLevel, requirements);
+    processHighLevelUserData(page, username, currentLevel) {
+        const data = AutoLinuxDoAccount.parse(page, username, Number(currentLevel));
+        this.renderAdvancedTrustLevel(username, data.targetLevel, data.requirements, data.level, data.periodDays);
+        return true;
     }
 
     // 新的渲染方法（基于1.js的逻辑，用于0级和1级用户）
@@ -7701,72 +7553,6 @@ class BrowseController {
         const totalCount = trustLevelDetails.totalCount;
         const allMet = achievedCount === totalCount;
 
-        const levelNames = {
-            0: 'Lv0 → Lv1',
-            1: 'Lv1 → Lv2'
-        };
-
-        // 获取昨日数据用于对比
-        const yesterdaySnapshot = this.getYesterdaySnapshot(username);
-
-        // 判断是否已满足所有要求，决定标题显示
-        const headerTitle = allMet
-            ? `Lv${targetLevel} ✓`
-            : (levelNames[currentLevel] || `Lv${currentLevel} → Lv${targetLevel}`);
-
-        let html = `
-            <div class="trust-level-header">
-                <span>📊 ${headerTitle} (${username})</span>
-                <button class="trust-level-refresh" data-action="refresh">🔄 刷新</button>
-            </div>
-        `;
-
-        trustLevelDetails.items.forEach(req => {
-            const progress = Math.min((req.current / req.required) * 100, 100);
-            const isCompleted = req.isMet;
-            const fillClass = isCompleted ? 'completed' : '';
-
-            // 计算与昨日的变化
-            const diff = this.calculateDataChange(req.current, yesterdaySnapshot, req.name);
-            const changeIndicator = this.generateChangeIndicator(diff);
-
-            // 检查是否是负面指标（需要红色显示当前值）
-            const isNegativeIndicator = req.name.includes('被禁言') || req.name.includes('被封禁') || req.name.includes('被举报的帖子') || req.name.includes('发起举报的用户');
-            const currentValueHtml = isNegativeIndicator ? `<span style="color: #ff6b6b;">${req.current}</span>` : req.current;
-
-            html += `
-                <div class="trust-level-item">
-                    <span class="trust-level-name">${req.name}</span>
-                    <div class="trust-level-progress">
-                        <div class="trust-level-bar">
-                            <div class="trust-level-bar-fill ${fillClass}" style="width: ${progress}%"></div>
-                        </div>
-                        <span class="trust-level-value">${currentValueHtml}/${req.required}${changeIndicator}</span>
-                    </div>
-                </div>
-            `;
-        });
-
-        if (allMet) {
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.25); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: #fff; font-size: 11px; font-weight: 600; text-align: center;">
-                        ✅ 已满足 Lv${targetLevel} 要求
-                    </div>
-                </div>
-            `;
-        } else {
-            const unmetCount = totalCount - achievedCount;
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.15); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 11px; font-weight: 500; text-align: center;">
-                        还需完成 ${unmetCount} 项升级到 Lv${targetLevel}
-                    </div>
-                </div>
-            `;
-        }
-
-        this.trustLevelContainer.innerHTML = html;
 
         // 保存缓存数据
         this.saveTrustLevelCache(username, {
@@ -7859,70 +7645,6 @@ class BrowseController {
         const totalCount = requirements.length;
         const allMet = achievedCount === totalCount;
 
-        const levelNames = {
-            0: 'Lv0 → Lv1',
-            1: 'Lv1 → Lv2',
-            2: 'Lv2 → Lv3',
-            3: 'Lv3 → Lv4'
-        };
-
-        // 获取昨日数据用于对比
-        const yesterdaySnapshot = this.getYesterdaySnapshot(username);
-
-        let html = `
-            <div class="trust-level-header">
-                <span>📊 ${levelNames[currentLevel] || `Lv${currentLevel} → Lv${targetLevel}`} (${username})</span>
-                <button class="trust-level-refresh" data-action="refresh">🔄 刷新</button>
-            </div>
-        `;
-
-        requirements.forEach(req => {
-            const progress = Math.min((req.current / req.required) * 100, 100);
-            const isCompleted = req.current >= req.required;
-            const fillClass = isCompleted ? 'completed' : '';
-
-            // 计算与昨日的变化
-            const diff = this.calculateDataChange(req.current, yesterdaySnapshot, req.name);
-            const changeIndicator = this.generateChangeIndicator(diff);
-
-            // 检查是否是负面指标（需要红色显示当前值）
-            const isNegativeIndicator = req.name.includes('被禁言') || req.name.includes('被封禁') || req.name.includes('被举报的帖子') || req.name.includes('发起举报的用户');
-            const currentValueHtml = isNegativeIndicator ? `<span style="color: #ff6b6b;">${req.current}</span>` : req.current;
-
-            html += `
-                <div class="trust-level-item">
-                    <span class="trust-level-name">${req.name}</span>
-                    <div class="trust-level-progress">
-                        <div class="trust-level-bar">
-                            <div class="trust-level-bar-fill ${fillClass}" style="width: ${progress}%"></div>
-                        </div>
-                        <span class="trust-level-value">${currentValueHtml}/${req.required}${changeIndicator}</span>
-                    </div>
-                </div>
-            `;
-        });
-
-        // 在数据下方添加总结信息
-        if (allMet) {
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.25); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: #fff; font-size: 11px; font-weight: 600; text-align: center;">
-                        ✅ 已满足 Lv${targetLevel} 要求
-                    </div>
-                </div>
-            `;
-        } else {
-            const unmetCount = totalCount - achievedCount;
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.15); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 11px; font-weight: 500; text-align: center;">
-                        还需完成 ${unmetCount} 项升级到 Lv${targetLevel}
-                    </div>
-                </div>
-            `;
-        }
-
-        this.trustLevelContainer.innerHTML = html;
 
         // 保存缓存数据（idcflare.com）
         const cacheItems = requirements.map(req => ({
@@ -8016,119 +7738,26 @@ class BrowseController {
         this.bindTrustLevelRefresh();
     }
 
-    // 渲染高级信任等级信息（从 connect.linux.do 获取的TL2+数据）
-    renderAdvancedTrustLevel(username, targetLevel, requirements) {
-        const achievedCount = requirements.filter(r => r.isMet).length;
-        const totalCount = requirements.length;
-
-        // 计算当前等级
-        const currentLevel = parseInt(targetLevel) - 1;
-
-        // 等级名称映射（简化显示）
-        const levelNames = {
-            2: 'Lv1 → Lv2',
-            3: 'Lv2 → Lv3',
-            4: 'Lv3 → Lv4'
-        };
-
-        // 获取昨日数据用于对比
-        const yesterdaySnapshot = this.getYesterdaySnapshot(username);
-
-        // 判断是否已满足所有要求，决定标题显示
-        const allRequirementsMet = achievedCount === totalCount;
-        const headerTitle = allRequirementsMet
-            ? `Lv${targetLevel} ✓`
-            : (levelNames[targetLevel] || `Lv${currentLevel} → Lv${targetLevel}`);
-
-        let html = `
-            <div class="trust-level-header">
-                <span>📊 ${headerTitle} (${username})</span>
-                <button class="trust-level-refresh" data-action="refresh">🔄 刷新</button>
-            </div>
-        `;
-
-        requirements.forEach(req => {
-            // 尝试从文本中提取数字
-            const currentMatch = req.current.match(/(\d+)/);
-            const requiredMatch = req.required.match(/(\d+)/);
-
-            const currentNum = currentMatch ? parseInt(currentMatch[1]) : 0;
-            const requiredNum = requiredMatch ? parseInt(requiredMatch[1]) : 1;
-
-            const progress = Math.min((currentNum / requiredNum) * 100, 100);
-            const isCompleted = req.isMet;
-            const fillClass = isCompleted ? 'completed' : '';
-
-            // 简化标签名称
-            let simpleName = req.name
-                .replace('已读帖子（所有时间）', '浏览帖子')
-                .replace('浏览的话题（所有时间）', '浏览话题')
-                .replace('访问次数（过去', '访问次数(')
-                .replace('个月）', '月)')
-                .replace('回复次数（最近', '回复(近')
-                .replace('天内）', '天)');
-
-            // 计算与昨日的变化（使用简化后的名称匹配）
-            const diff = this.calculateDataChange(currentNum, yesterdaySnapshot, simpleName);
-            const changeIndicator = this.generateChangeIndicator(diff);
-
-            // 检查是否是负面指标（需要红色显示当前值）
-            const isNegativeIndicator = req.name.includes('被禁言') || req.name.includes('被封禁') || req.name.includes('被举报的帖子') || req.name.includes('发起举报的用户');
-            const currentValueHtml = isNegativeIndicator ? `<span style="color: #ff6b6b;">${req.current}</span>` : req.current;
-
-            html += `
-                <div class="trust-level-item">
-                    <span class="trust-level-name">${simpleName}</span>
-                    <div class="trust-level-progress">
-                        <div class="trust-level-bar">
-                            <div class="trust-level-bar-fill ${fillClass}" style="width: ${progress}%"></div>
-                        </div>
-                        <span class="trust-level-value">${currentValueHtml}/${req.required}${changeIndicator}</span>
-                    </div>
-                </div>
-            `;
-        });
-
-        // 在数据下方添加总结信息
-        if (achievedCount === totalCount) {
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.25); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: #fff; font-size: 11px; font-weight: 600; text-align: center;">
-                        ✅ 已满足 Lv${targetLevel} 要求
-                    </div>
-                </div>
-            `;
-        } else {
-            const unmetCount = totalCount - achievedCount;
-            html += `
-                <div style="background: rgba(255, 255, 255, 0.15); padding: 6px 8px; border-radius: 6px; margin: 6px 0 0 0;">
-                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 11px; font-weight: 500; text-align: center;">
-                        还需完成 ${unmetCount} 项升级到 Lv${targetLevel}
-                    </div>
-                </div>
-            `;
-        }
-
-        this.trustLevelContainer.innerHTML = html;
-
-        // 保存缓存数据
+    // 成功结果统一保存，由缓存展示入口负责渲染。
+    renderAdvancedTrustLevel(username, targetLevel, requirements, currentLevel, periodDays = null) {
         this.saveTrustLevelCache(username, {
-            type: 'high_level',
-            username,
-            targetLevel,
-            currentLevel,
-            requirements,
-            achievedCount,
-            totalCount
+            type: 'high_level', username, targetLevel: Number(targetLevel), currentLevel,
+            requirements, periodDays,
+            achievedCount: requirements.filter(req => req.isMet).length,
+            totalCount: requirements.length
         });
-
-        this.bindTrustLevelRefresh();
     }
 
     bindTrustLevelRefresh() {
-        this.trustLevelContainer
-            ?.querySelector('.trust-level-refresh')
-            ?.addEventListener('click', () => this.loadUserTrustLevel(true), { once: true });
+        if (!this.trustLevelContainer || this.trustLevelRefreshContainer === this.trustLevelContainer) return;
+        this.trustLevelRefreshContainer = this.trustLevelContainer;
+        this.trustLevelContainer.addEventListener('click', event => {
+            const button = event.target.closest?.('.trust-level-refresh');
+            if (!button || !this.trustLevelContainer.contains(button) || button.disabled) return;
+            event.preventDefault();
+            event.stopPropagation();
+            void this.loadUserTrustLevel(true);
+        });
     }
 
     // 加载用户阅读历史
@@ -9306,14 +8935,49 @@ class BrowseController {
     }
 
     getPostIdFromElement(postElement) {
+        if (!postElement) return null;
+        // Verified current markup: article#post_1[data-post-id], inside which
+        // the reaction counter carries the same global post ID.
+        const article = postElement.matches?.('article[data-post-id]')
+            ? postElement : postElement.closest?.('article[data-post-id]');
         const topicPost = postElement?.matches?.('.topic-post')
             ? postElement
             : postElement?.closest?.('.topic-post');
-        const dataId = topicPost?.dataset?.postId || postElement?.dataset?.postId;
-        if (dataId) return String(dataId);
+        const root = article || topicPost || postElement;
+        const ids = new Set();
+        const add = value => {
+            const id = String(value ?? '').trim();
+            if (/^[1-9]\d*$/.test(id)) ids.add(id);
+        };
+        // DOM ids such as post_1 identify a floor, not the global /posts/{id} ID.
+        // Read only explicit post IDs and reaction counters inside this post.
+        for (const node of [root, ...root.querySelectorAll('[data-post-id], [id^="discourse-reactions-counter-"]')]) {
+            if (article && node !== article && node.closest('article[data-post-id]') !== article) continue;
+            if (topicPost && node !== topicPost && node.closest('.topic-post') !== topicPost) continue;
+            add(node.getAttribute('data-post-id'));
+            add(node.id?.match(/^discourse-reactions-counter-([1-9]\d*)-(?:left|right)$/)?.[1]);
+        }
+        // Conflicting markup is unsafe: do not request or click another post.
+        return ids.size === 1 ? [...ids][0] : null;
+    }
 
-        const idValue = topicPost?.id || postElement?.id || '';
-        return idValue.match(/(?:post_|post-)(\d+)/)?.[1] || null;
+    getAutoLikeFirstPost() {
+        const article = document.querySelector('article[data-post-id][id="post_1"]');
+        if (article && (!article.hasAttribute('data-post-number') || article.getAttribute('data-post-number') === '1')) {
+            return article;
+        }
+        for (const post of document.querySelectorAll('.topic-post')) {
+            const markers = [post, ...post.querySelectorAll('[data-post-number], [id="post_1"], [id="post-1"]')];
+            const numbers = new Set();
+            for (const node of markers) {
+                if (node !== post && node.closest('.topic-post') !== post) continue;
+                const number = node.getAttribute('data-post-number');
+                if (/^[1-9]\d*$/.test(number || '')) numbers.add(Number(number));
+                if (/^post[_-]1$/.test(node.id || '')) numbers.add(1);
+            }
+            if (numbers.size === 1 && numbers.has(1)) return post;
+        }
+        return null;
     }
 
     readPostLikeCountFromDom(postElement) {
@@ -9557,15 +9221,16 @@ class BrowseController {
         let lastContext = null;
 
         while (this.autoRunning && this.autoLikeEnabled && Date.now() - startedAt < timeoutMs) {
-            const firstPost = document.querySelector('.topic-post[data-post-number="1"], .topic-post');
+            const firstPost = this.getAutoLikeFirstPost();
             const categoryCheck = this.isLikeAllowedInCurrentCategory();
             const likeButton = this.getAutoLikeButton(firstPost);
             const authorSlug = this.getPostAuthorSlug(firstPost);
             const isOwnTopic = Boolean(currentUsername && authorSlug && currentUsername === authorSlug);
-            lastContext = { firstPost, categoryCheck, likeButton, isOwnTopic };
+            const postId = this.getPostIdFromElement(firstPost);
+            lastContext = { firstPost, postId, categoryCheck, likeButton, isOwnTopic };
 
             if (firstPost && categoryCheck.reason !== 'category_not_found' &&
-                (categoryCheck.reason === 'category_excluded' || likeButton || isOwnTopic)) {
+                (categoryCheck.reason === 'category_excluded' || isOwnTopic || (likeButton && postId))) {
                 return lastContext;
             }
             await Utils.sleep(250);
@@ -9693,6 +9358,12 @@ class BrowseController {
             : preClickSnapshot.count;
         const currentLikeButton = this.getAutoLikeButton(firstPost);
         if (!this.autoRunning || !this.autoLikeEnabled || !currentLikeButton || currentLikeButton.disabled) return;
+        const currentTopicId = window.location.pathname.match(/\/t\/[^/]+\/(\d+)/)?.[1];
+        if (currentTopicId !== topicId || this.getAutoLikeFirstPost() !== firstPost ||
+            this.getPostIdFromElement(firstPost) !== postId) {
+            this.updateAutoLikeStatus('autoLikeUnavailable');
+            return;
+        }
 
         console.log('[自动点赞] 点击主题首帖点赞按钮');
         await HumanInput.click(currentLikeButton);
